@@ -8,6 +8,12 @@ class NavigationService {
     navigatorKey.currentState?.pushNamed(routeName, arguments: arguments);
   }
 
+  static navigateAndReplaceTo(String routeName,
+      {Map<String, dynamic>? arguments}) {
+    navigatorKey.currentState
+        ?.pushReplacementNamed(routeName, arguments: arguments);
+  }
+
   static replaceWith(String routeName, {Map<String, dynamic>? arguments}) {
     navigatorKey.currentState
         ?.pushReplacementNamed(routeName, arguments: arguments);

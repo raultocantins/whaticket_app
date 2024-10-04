@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:get_it/get_it.dart';
 import 'package:whaticket_app/src/core/utils/navigator_utils.dart';
 import 'package:whaticket_app/src/features/auth/controllers/auth_controller.dart';
-import 'package:whaticket_app/src/features/chat/presentation/pages/chats_list_page.dart';
 
 class SplashPage extends StatefulWidget {
   const SplashPage({super.key});
@@ -30,6 +29,10 @@ class _SplashPageState extends State<SplashPage> {
 
   @override
   Widget build(BuildContext context) {
-    return const ChatsListPage();
+    return const Scaffold(
+      body: Center(
+        child: CircularProgressIndicator(),
+      ),
+    );
   }
 }

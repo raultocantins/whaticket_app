@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:whaticket_app/src/core/get_it/get_it.dart';
 import 'package:whaticket_app/src/core/utils/navigator_utils.dart';
 import 'package:whaticket_app/src/features/chat/presentation/pages/chat_page.dart';
-import 'package:whaticket_app/src/features/chat/presentation/pages/chats_list_page.dart';
+import 'package:whaticket_app/src/features/chat/presentation/pages/list_chats_page.dart';
 import 'package:whaticket_app/src/features/login/pages/login_page.dart';
 import 'package:whaticket_app/src/features/splash/pages/splash_page.dart';
 

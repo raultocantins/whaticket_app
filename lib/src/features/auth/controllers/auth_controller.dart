@@ -10,13 +10,14 @@ abstract class _AuthController with Store {
   final Authentication authentication;
   _AuthController(this.authentication);
 
-  bool get isLogged => false;
+  @computed
+  bool get isLogged => auth?.token?.isNotEmpty ?? false;
 
   @observable
-  AuthModel auth = AuthModel();
+  AuthModel? auth = AuthModel();
 
   @action
-  void setAuth(AuthModel value) {
+  void setAuth(AuthModel? value) {
     auth = value;
   }
 

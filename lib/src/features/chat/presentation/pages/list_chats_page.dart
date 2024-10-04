@@ -1,6 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_mobx/flutter_mobx.dart';
+import 'package:get_it/get_it.dart';
 import 'package:whaticket_app/src/core/utils/date_utils.dart';
 import 'package:whaticket_app/src/core/utils/navigator_utils.dart';
+import 'package:whaticket_app/src/features/chat/presentation/controllers/list_chats_controller.dart';
 
 class ChatsListPage extends StatefulWidget {
   const ChatsListPage({super.key});
@@ -10,7 +13,15 @@ class ChatsListPage extends StatefulWidget {
 }
 
 class _ChatsListPageState extends State<ChatsListPage> {
+  ListChatsController? _controller;
   int selectedBottomNavIndex = 0;
+
+  @override
+  void initState() {
+    _controller = GetIt.I.get<ListChatsController>();
+    _controller?.getChats();
+    super.initState();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -68,20 +79,26 @@ class _ChatsListPageState extends State<ChatsListPage> {
           ),
         ),
       ),
-      body: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 24),
-        child: ListView.builder(
-          itemCount: 10,
-          itemBuilder: (context, index) => ChatItemWidget(
-            id: index.toString(),
-            title: 'Maude Mckinney',
-            subtitle: 'Really? That’s great..',
-            updatedDate: DateTime.now(),
-            profileUrl:
-                'https://i.pinimg.com/236x/03/ac/c0/03acc030c6700dfd274d1ef20e70609b.jpg',
-          ),
-        ),
-      ),
+      body: Observer(builder: (context) {
+        return Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 24),
+          child: (_controller?.isLoading ?? false)
+              ? const Center(
+                  child: CircularProgressIndicator(),
+                )
+              : ListView.builder(
+                  itemCount: 10,
+                  itemBuilder: (context, index) => ChatItemWidget(
+                    id: index.toString(),
+                    title: 'Maude Mckinney',
+                    subtitle: 'Really? That’s great..',
+                    updatedDate: DateTime.now(),
+                    profileUrl:
+                        'https://i.pinimg.com/236x/03/ac/c0/03acc030c6700dfd274d1ef20e70609b.jpg',
+                  ),
+                ),
+        );
+      }),
       bottomNavigationBar: BottomNavigationBar(
           currentIndex: selectedBottomNavIndex,
           onTap: (index) {

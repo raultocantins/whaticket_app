@@ -11,14 +11,22 @@ abstract class _ListChatsController with Store {
   _ListChatsController(this.service);
 
   @observable
-  ListChatsModel listChats = ListChatsModel();
+  ListChatsModel listChatsOpen = ListChatsModel();
+
+  @observable
+  ListChatsModel listChatsPending = ListChatsModel();
 
   @observable
   bool isLoading = false;
 
   @action
-  void setListChats(ListChatsModel value) {
-    listChats = value;
+  void setListChatsOpen(ListChatsModel value) {
+    listChatsOpen = value;
+  }
+
+  @action
+  void setListChatsPending(ListChatsModel value) {
+    listChatsPending = value;
   }
 
   @action
@@ -26,15 +34,32 @@ abstract class _ListChatsController with Store {
     isLoading = value;
   }
 
-  Future<void> getChats() async {
+  Future<void> getChatsOpen() async {
     setLoading(true);
     try {
       final r = await service.getChats();
-      setListChats(r);
+      setListChatsOpen(r);
     } catch (e) {
       // print(e);
       //mostrar notificação de erro
     }
     setLoading(false);
+  }
+
+  Future<void> getChatsPending() async {
+    setLoading(true);
+    try {
+      final r = await service.getChats();
+      setListChatsPending(r);
+    } catch (e) {
+      // print(e);
+      //mostrar notificação de erro
+    }
+    setLoading(false);
+  }
+
+  void dispose() {
+    listChatsOpen = ListChatsModel();
+    listChatsPending = ListChatsModel();
   }
 }

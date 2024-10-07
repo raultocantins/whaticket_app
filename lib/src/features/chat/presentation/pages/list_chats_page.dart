@@ -12,15 +12,28 @@ class ChatsListPage extends StatefulWidget {
   State<ChatsListPage> createState() => _ChatsListPageState();
 }
 
-class _ChatsListPageState extends State<ChatsListPage> {
+class _ChatsListPageState extends State<ChatsListPage>
+    with TickerProviderStateMixin {
   ListChatsController? _controller;
+  TabController? _tabController;
   int selectedBottomNavIndex = 0;
 
   @override
   void initState() {
+    _tabController = TabController(
+      initialIndex: 0,
+      length: 2,
+      vsync: this,
+    );
     _controller = GetIt.I.get<ListChatsController>();
-    _controller?.getChats();
+    _controller?.getChatsOpen();
     super.initState();
+  }
+
+  @override
+  void dispose() {
+    _controller?.dispose();
+    super.dispose();
   }
 
   @override
@@ -42,27 +55,11 @@ class _ChatsListPageState extends State<ChatsListPage> {
           )
         ],
         bottom: PreferredSize(
-          preferredSize: const Size.fromHeight(130),
+          preferredSize: const Size.fromHeight(60),
           child: Padding(
             padding: const EdgeInsets.symmetric(horizontal: 24),
             child: Column(
               children: [
-                SizedBox(
-                  height: 60,
-                  width: double.infinity,
-                  child: ListView.builder(
-                    itemCount: 4,
-                    scrollDirection: Axis.horizontal,
-                    itemBuilder: (context, index) => const Padding(
-                      padding: EdgeInsets.only(right: 12),
-                      child: SizedBox(
-                          width: 60, height: 60, child: CircleAvatar()),
-                    ),
-                  ),
-                ),
-                const SizedBox(
-                  height: 20,
-                ),
                 TextField(
                   decoration: InputDecoration(
                     hintText: 'Pesquisar...',
@@ -82,21 +79,55 @@ class _ChatsListPageState extends State<ChatsListPage> {
       body: Observer(builder: (context) {
         return Padding(
           padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 24),
-          child: (_controller?.isLoading ?? false)
-              ? const Center(
-                  child: CircularProgressIndicator(),
-                )
-              : ListView.builder(
-                  itemCount: 10,
-                  itemBuilder: (context, index) => ChatItemWidget(
-                    id: index.toString(),
-                    title: 'Maude Mckinney',
-                    subtitle: 'Really? That’s great..',
-                    updatedDate: DateTime.now(),
-                    profileUrl:
-                        'https://i.pinimg.com/236x/03/ac/c0/03acc030c6700dfd274d1ef20e70609b.jpg',
+          child: Column(
+            children: [
+              TabBar(
+                controller: _tabController,
+                onTap: (value) => value == 0
+                    ? _controller?.getChatsOpen()
+                    : _controller?.getChatsPending(),
+                tabs: [
+                  Tab(
+                    text: 'Atendendo',
+                    icon: Badge.count(
+                      count: _controller?.listChatsOpen.tickets?.length ?? 0,
+                      child: const Icon(Icons.person_outline),
+                    ),
                   ),
-                ),
+                  Tab(
+                    text: 'Aguardando',
+                    icon: Badge.count(
+                      count: _controller?.listChatsPending.tickets?.length ?? 0,
+                      child: const Icon(Icons.inbox),
+                    ),
+                  ),
+                ],
+              ),
+              const SizedBox(height: 24),
+              (_controller?.isLoading ?? false)
+                  ? const Expanded(
+                      child: Center(
+                        child: CircularProgressIndicator(),
+                      ),
+                    )
+                  : Expanded(
+                      child: ListView.builder(
+                        itemCount: _tabController?.index == 0
+                            ? _controller?.listChatsOpen.tickets?.length ?? 0
+                            : _controller?.listChatsPending.tickets?.length ??
+                                0,
+                        itemBuilder: (context, index) => ChatItemWidget(
+                          id: index.toString(),
+                          title: 'Maude Mckinney',
+                          subtitle: 'Really? That’s great..',
+                          updatedDate: DateTime.now(),
+                          profileUrl:
+                              'https://i.pinimg.com/236x/03/ac/c0/03acc030c6700dfd274d1ef20e70609b.jpg',
+                        ),
+                      ),
+                    ),
+            ],
+          ),
         );
       }),
       bottomNavigationBar: BottomNavigationBar(

@@ -27,7 +27,7 @@ class GetItSetup {
   void controllers() {
     getIt.registerLazySingleton<AuthController>(() => AuthController(getIt()));
     getIt.registerLazySingleton<ListChatsController>(
-        () => ListChatsController(getIt()));
+        () => ListChatsController(getIt(), getIt()));
   }
 
   void clientHttp() async {

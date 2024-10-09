@@ -61,6 +61,9 @@ class _ChatsListPageState extends State<ChatsListPage>
             child: Column(
               children: [
                 TextField(
+                  onChanged: (v) => _controller?.setSearchParam(
+                      v, _tabController?.index == 0 ? true : false),
+                  cursorColor: Theme.of(context).primaryColor,
                   decoration: InputDecoration(
                     hintText: 'Pesquisar...',
                     border: OutlineInputBorder(
@@ -89,17 +92,27 @@ class _ChatsListPageState extends State<ChatsListPage>
                 tabs: [
                   Tab(
                     text: 'Atendendo',
-                    icon: Badge.count(
-                      count: _controller?.listChatsOpen.tickets?.length ?? 0,
-                      child: const Icon(Icons.person_outline),
-                    ),
+                    icon: _controller?.listChatsOpen.tickets?.isEmpty ?? false
+                        ? const Icon(Icons.person_outline)
+                        : Badge.count(
+                            count:
+                                _controller?.listChatsOpen.tickets?.length ?? 0,
+                            backgroundColor: Theme.of(context).primaryColor,
+                            child: const Icon(Icons.person_outline),
+                          ),
                   ),
                   Tab(
                     text: 'Aguardando',
-                    icon: Badge.count(
-                      count: _controller?.listChatsPending.tickets?.length ?? 0,
-                      child: const Icon(Icons.inbox),
-                    ),
+                    icon: _controller?.listChatsPending.tickets?.isEmpty ??
+                            false
+                        ? const Icon(Icons.inbox)
+                        : Badge.count(
+                            count:
+                                _controller?.listChatsPending.tickets?.length ??
+                                    0,
+                            backgroundColor: Theme.of(context).primaryColor,
+                            child: const Icon(Icons.inbox),
+                          ),
                   ),
                 ],
               ),
@@ -116,14 +129,20 @@ class _ChatsListPageState extends State<ChatsListPage>
                             ? _controller?.listChatsOpen.tickets?.length ?? 0
                             : _controller?.listChatsPending.tickets?.length ??
                                 0,
-                        itemBuilder: (context, index) => ChatItemWidget(
-                          id: index.toString(),
-                          title: 'Maude Mckinney',
-                          subtitle: 'Really? That’s great..',
-                          updatedDate: DateTime.now(),
-                          profileUrl:
-                              'https://i.pinimg.com/236x/03/ac/c0/03acc030c6700dfd274d1ef20e70609b.jpg',
-                        ),
+                        itemBuilder: (context, index) {
+                          final ticket = _tabController?.index == 0
+                              ? _controller?.listChatsOpen.tickets![index]
+                              : _controller?.listChatsPending.tickets![index];
+                          return ChatItemWidget(
+                            id: ticket?.id.toString() ?? '',
+                            title: ticket?.contact?.name ?? '',
+                            subtitle: ticket?.lastMessage ?? '',
+                            updatedDate: ticket?.updatedAt != null
+                                ? DateTime.parse(ticket!.updatedAt!)
+                                : DateTime.now(),
+                            profileUrl: ticket?.contact?.profilePicUrl ?? '',
+                          );
+                        },
                       ),
                     ),
             ],

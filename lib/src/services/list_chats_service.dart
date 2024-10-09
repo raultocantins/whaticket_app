@@ -24,7 +24,7 @@ class ListChatsService {
         'status': status,
         'date': date,
         'showAll': showAll,
-        'withUnreadMessages': withUnreadMessages,
+        'withUnreadMessages': 'false',
         'queueIds': queueIds,
       });
       if (response.statusCode == 200) {
